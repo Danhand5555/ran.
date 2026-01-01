@@ -5,95 +5,108 @@ struct RunTab: View {
   let onStart: () -> Void
   @State private var isPulsing = false
   @State private var streakDays = 14
+  @StateObject private var healthManager = HealthManager()
 
   var body: some View {
-    VStack(spacing: 0) {
-      // Streak Display
-      ZStack {
-        SpeedLines(ink: colors.ink, isRotating: false)
-        VStack(spacing: -5) {
-          Text("\(streakDays)")
-            .font(.system(size: 150, weight: .black, design: .rounded))
-            .foregroundStyle(colors.paper)
-            .shadow(color: colors.ink, radius: 0, x: 8, y: 8)
-            .scaleEffect(isPulsing ? 1.05 : 1.0)
-            .animation(
-              .easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isPulsing)
+    ScrollView(showsIndicators: false) {
+      VStack(spacing: 0) {
+        // Streak Display
+        ZStack {
+          SpeedLines(ink: colors.ink, isRotating: false)
+          VStack(spacing: -5) {
+            Text("\(streakDays)")
+              .font(.system(size: 120, weight: .black, design: .rounded))
+              .foregroundStyle(colors.paper)
+              .shadow(color: colors.ink, radius: 0, x: 6, y: 6)
+              .scaleEffect(isPulsing ? 1.03 : 1.0)
+              .animation(
+                .easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isPulsing)
 
-          Text("DAY STREAK")
-            .font(.system(size: 28, weight: .black))
-            .padding(.horizontal, 20)
-            .padding(.vertical, 8)
-            .comicPanel(color: colors.accent, ink: colors.ink)
-            .rotationEffect(.degrees(-3))
+            Text("DAY STREAK")
+              .font(.system(size: 24, weight: .black))
+              .padding(.horizontal, 16)
+              .padding(.vertical, 6)
+              .comicPanel(color: colors.accent, ink: colors.ink)
+              .rotationEffect(.degrees(-3))
+          }
+
+          // Fire badge
+          FireStreakBadge(colors: colors)
+            .offset(x: 90, y: -60)
         }
+        .frame(height: 200)
+        .onAppear { isPulsing = true }
 
-        // Fire badge
-        FireStreakBadge(colors: colors)
-          .offset(x: 100, y: -80)
-      }
-      .frame(height: 280)
-      .onAppear { isPulsing = true }
+        // Weekly Progress Bar
+        WeeklyProgressView(colors: colors, currentDay: streakDays % 7)
+          .padding(.horizontal, 20)
+          .padding(.top, 15)
 
-      // Weekly Progress Bar
-      WeeklyProgressView(colors: colors, currentDay: streakDays % 7)
-        .padding(.horizontal, 40)
-        .padding(.top, 20)
+        Spacer().frame(height: 20)
 
-      Spacer().frame(height: 30)
+        // Contract Card
+        VStack(alignment: .leading, spacing: 0) {
+          Text("READY FOR TODAY'S MISSION?")
+            .font(.system(size: 16, weight: .black))
+            .italic()
+            .multilineTextAlignment(.center)
+            .padding(20)
+            .frame(maxWidth: .infinity)
+            .background(colors.panel)
+            .border(colors.ink, width: RanColors.thickness)
+            .background(colors.ink.offset(x: 5, y: 5))
 
-      // Contract Card
-      VStack(alignment: .leading, spacing: 0) {
-        Text("READY FOR TODAY'S MISSION?")
-          .font(.system(size: 18, weight: .black))
-          .italic()
-          .multilineTextAlignment(.center)
-          .padding(25)
+          Image(systemName: "arrowtriangle.down.fill")
+            .resizable()
+            .frame(width: 25, height: 16)
+            .foregroundStyle(colors.panel)
+            .offset(x: 35, y: -2)
+            .overlay(
+              Image(systemName: "arrowtriangle.down.fill")
+                .resizable()
+                .frame(width: 25, height: 16)
+                .foregroundStyle(colors.ink)
+                .offset(x: 37, y: 2)
+                .zIndex(-1)
+            )
+        }
+        .padding(.horizontal, 20)
+
+        Spacer().frame(height: 25)
+
+        // Start Button
+        Button(action: onStart) {
+          HStack(spacing: 12) {
+            Image(systemName: "play.fill")
+            Text("START MISSION")
+          }
+          .font(.system(size: 22, weight: .black))
+          .foregroundStyle(colors.paper)
+          .padding(.vertical, 18)
           .frame(maxWidth: .infinity)
-          .background(colors.panel)
-          .border(colors.ink, width: RanColors.thickness)
-          .background(colors.ink.offset(x: 5, y: 5))
-
-        Image(systemName: "arrowtriangle.down.fill")
-          .resizable()
-          .frame(width: 30, height: 20)
-          .foregroundStyle(colors.panel)
-          .offset(x: 40, y: -2)
-          .overlay(
-            Image(systemName: "arrowtriangle.down.fill")
-              .resizable()
-              .frame(width: 30, height: 20)
-              .foregroundStyle(colors.ink)
-              .offset(x: 42, y: 2)
-              .zIndex(-1)
-          )
-      }
-      .padding(.horizontal, 40)
-
-      Spacer().frame(height: 40)
-
-      // Start Button
-      Button(action: onStart) {
-        HStack(spacing: 12) {
-          Image(systemName: "play.fill")
-          Text("START MISSION")
+          .background(colors.ink)
+          .comicPanel(color: colors.ink, ink: colors.ink, x: 6, y: 6)
         }
-        .font(.system(size: 24, weight: .black))
-        .foregroundStyle(colors.paper)
-        .padding(.vertical, 22)
-        .frame(maxWidth: .infinity)
-        .background(colors.ink)
-        .comicPanel(color: colors.ink, ink: colors.ink, x: 6, y: 6)
-      }
-      .buttonStyle(.plain)
-      .padding(.horizontal, 50)
+        .buttonStyle(.plain)
+        .padding(.horizontal, 20)
 
-      // Quick Stats
-      HStack(spacing: 30) {
-        QuickStat(label: "This Week", value: "12.4 km", colors: colors)
-        QuickStat(label: "Best Streak", value: "21 days", colors: colors)
+        // Quick Stats - Real data from HealthKit
+        HStack(spacing: 30) {
+          QuickStat(
+            label: "This Week",
+            value: String(format: "%.1f km", healthManager.weeklyDistance),
+            colors: colors
+          )
+          QuickStat(label: "Best Streak", value: "21 days", colors: colors)
+        }
+        .padding(.top, 20)
+        .padding(.bottom, 10)
       }
-      .padding(.top, 25)
+    }
+    .onAppear {
+      Task {
+        await healthManager.requestAuthorization()
+      }
     }
   }
 }
@@ -186,17 +199,34 @@ struct RunStatBox: View {
 struct ActiveRunPage: View {
   let colors: RanColors
   let onStop: (Double) -> Void
-  @State private var distance = 0.0
-  @State private var timer = 0
-  @State private var pace = 5.30
+
+  @StateObject private var locationManager = LocationManager()
+  @StateObject private var healthManager = HealthManager()
+
+  @State private var elapsedTime: TimeInterval = 0
   @State private var calories = 0
+
   let timerJob = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+  private var formattedDistance: String {
+    String(format: "%.2f", locationManager.totalDistance)
+  }
+
+  private var formattedPace: String {
+    if locationManager.currentPace > 0 && locationManager.currentPace < 20 {
+      return String(format: "%.2f", locationManager.currentPace)
+    }
+    return "--"
+  }
 
   var body: some View {
     ZStack {
       colors.paper.ignoresSafeArea()
 
       VStack(spacing: 20) {
+        // Top breathing room to ensure floating effect (clears Dynamic Island)
+        Color.clear.frame(height: 80)
+
         // Header
         HStack {
           VStack(alignment: .leading, spacing: 4) {
@@ -205,6 +235,7 @@ struct ActiveRunPage: View {
               .padding(8)
               .background(colors.ink)
               .foregroundStyle(colors.paper)
+              .comicPanel(color: colors.ink, ink: colors.ink, x: 4, y: 4)
             Text("Bangkok • Sector 7B")
               .font(.system(size: 11, weight: .bold))
               .foregroundColor(colors.ink.opacity(0.5))
@@ -214,50 +245,47 @@ struct ActiveRunPage: View {
             Text("LVL 42")
               .font(.system(size: 16, weight: .black))
               .italic()
-            Text("+\(Int(distance * 100)) XP")
+            Text("+\(Int(locationManager.totalDistance * 100)) XP")
               .font(.system(size: 12, weight: .bold))
               .foregroundColor(colors.accent)
           }
         }
-        .padding(.top, 50)
-        .padding(.horizontal, 30)
+        .padding(.horizontal, 20)
+
+        // Main Metric (Distance)
+        VStack(spacing: 5) {
+          Text(formattedDistance)
+            .font(.system(size: 120, weight: .black, design: .rounded))
+            .foregroundColor(colors.ink)
+            .shadow(color: colors.ink.opacity(0.1), radius: 0, x: 5, y: 5)
+
+          Text("KILOMETERS")
+            .font(.system(size: 24, weight: .black))
+            .foregroundColor(colors.ink)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 8)
+            .background(colors.accent)
+            .comicPanel(color: colors.accent, ink: colors.ink)
+          // Removed negative offset and increased spacing for better UI/UX
+        }
 
         Spacer()
-
-        // Main Distance Display
-        ZStack {
-          SpeedLines(ink: colors.ink, isRotating: true)
-          VStack(spacing: 10) {
-            Text(String(format: "%.2f", distance))
-              .font(.system(size: 120, weight: .black, design: .rounded))
-              .foregroundStyle(colors.ink)
-              .shadow(color: colors.accent, radius: 0, x: 8, y: 8)
-              .contentTransition(.numericText())
-
-            Text("KILOMETERS")
-              .font(.system(size: 24, weight: .black))
-              .padding(.horizontal, 15)
-              .padding(.vertical, 5)
-              .background(colors.accent)
-              .border(colors.ink, width: 3)
-          }
-        }
 
         // Stats Grid
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
-          RunStatBox(label: "TIME", value: formatTime(timer), colors: colors)
-          RunStatBox(label: "PACE", value: String(format: "%.2f /km", pace), colors: colors)
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+          RunStatBox(label: "TIME", value: formatTime(Int(elapsedTime)), colors: colors)
+          RunStatBox(label: "PACE", value: formattedPace, colors: colors)
           RunStatBox(label: "CALORIES", value: "\(calories)", colors: colors)
-          RunStatBox(label: "ENERGY", value: "98%", colors: colors)
-        }
-        .padding(.horizontal, 30)
+          RunStatBox(label: "BPM", value: "\(healthManager.currentHeartRate)", colors: colors)
+        }.padding(.horizontal, 20)
 
         Spacer()
 
-        // Finish Button
-        Button {
-          onStop(distance)
-        } label: {
+        // Stop Button
+        Button(action: {
+          locationManager.stopTracking()
+          onStop(locationManager.totalDistance)
+        }) {
           HStack {
             Image(systemName: "flag.checkered")
             Text("FINISH MISSION")
@@ -270,15 +298,21 @@ struct ActiveRunPage: View {
           .comicPanel(color: colors.action, ink: Color.black, x: 6, y: 6)
         }
         .buttonStyle(.plain)
-        .padding(.horizontal, 40)
-        .padding(.bottom, 50)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 60)  // Increased padding to lift button off the bottom edge
+      }
+    }
+    .onAppear {
+      locationManager.requestAuthorization()
+      locationManager.startTracking()
+      Task {
+        await healthManager.requestAuthorization()
       }
     }
     .onReceive(timerJob) { _ in
-      timer += 1
-      distance += Double.random(in: 0.006...0.012)
-      calories = Int(distance * 62)
-      pace = 5.0 + Double.random(in: -0.3...0.3)
+      elapsedTime += 1
+      // Estimate calories (approx 60 cal/km for running)
+      calories = Int(locationManager.totalDistance * 60)
     }
   }
 

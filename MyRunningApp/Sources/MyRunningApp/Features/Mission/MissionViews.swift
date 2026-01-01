@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 struct SharingCardView: View {
   let colors: RanColors
@@ -170,12 +173,24 @@ struct SharingCardView: View {
     let renderer = ImageRenderer(content: cardContent)
     renderer.scale = 3
 
-    if let image = renderer.nsImage {
-      let picker = NSSharingServicePicker(items: [image])
-      if let window = NSApplication.shared.windows.first {
-        picker.show(relativeTo: .zero, of: window.contentView!, preferredEdge: .minY)
+    #if os(macOS)
+      if let image = renderer.nsImage {
+        let picker = NSSharingServicePicker(items: [image])
+        if let window = NSApplication.shared.windows.first {
+          picker.show(relativeTo: .zero, of: window.contentView!, preferredEdge: .minY)
+        }
       }
-    }
+    #elseif os(iOS)
+      if let image = renderer.uiImage {
+        let activityVC = UIActivityViewController(
+          activityItems: [image], applicationActivities: nil)
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+          let rootVC = windowScene.windows.first?.rootViewController
+        {
+          rootVC.present(activityVC, animated: true)
+        }
+      }
+    #endif
   }
 }
 

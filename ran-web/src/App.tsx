@@ -89,6 +89,18 @@ function App() {
             <div className="countdown-unit">Seconds</div>
           </div>
         </div>
+
+        {/* Progress Bar */}
+        <div className="progress-container">
+          <div className="progress-label-row">
+            <span>SYSTEM INITIALIZATION</span>
+            <span>86%</span>
+          </div>
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: '86%' }}></div>
+          </div>
+          <div className="progress-status">OPTIMIZING NEURAL PATHWAYS [████████░░]</div>
+        </div>
       </section>
 
       {/* Stats */}

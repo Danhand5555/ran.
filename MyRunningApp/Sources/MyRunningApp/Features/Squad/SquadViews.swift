@@ -1,5 +1,11 @@
+import MapKit
 import SwiftUI
 
+#if os(iOS)
+  import UIKit
+#endif
+
+// MARK: - Squad Tab
 struct SquadTab: View {
   let colors: RanColors
   @Binding var showMap: Bool
@@ -105,13 +111,17 @@ struct SquadTab: View {
           }.padding(12).background(colors.panel).border(colors.ink, width: 2)
         }
 
-      }.padding(.horizontal, 30).padding(.bottom, 20)
+      }.padding(.horizontal, 20).padding(.bottom, 20)
     }
   }
 
   func copyInvite() {
-    NSPasteboard.general.clearContents()
-    NSPasteboard.general.setString("JOIN MY RAN SQUAD: ISSUE-#14-HQ", forType: .string)
+    #if os(macOS)
+      NSPasteboard.general.clearContents()
+      NSPasteboard.general.setString("JOIN MY RAN SQUAD: ISSUE-#14-HQ", forType: .string)
+    #elseif os(iOS)
+      UIPasteboard.general.string = "JOIN MY RAN SQUAD: ISSUE-#14-HQ"
+    #endif
     withAnimation { showInviteSuccess = true }
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       withAnimation { showInviteSuccess = false }
@@ -119,8 +129,7 @@ struct SquadTab: View {
   }
 }
 
-// MARK: - Duel Card and other components remain the same...
-
+// MARK: - Duel Card
 struct DuelMemberCard: View {
   let name: String
   let streak: Int
@@ -201,72 +210,108 @@ struct DuelSegment: View {
   }
 }
 
+// MARK: - Squad Map View (MapKit Integrated)
+
 struct SquadMapView: View {
   let colors: RanColors
   let onDismiss: () -> Void
+  @EnvironmentObject var healthManager: HealthManager
+
+  // Default to user location region
+  @State private var position: MapCameraPosition = .userLocation(fallback: .automatic)
+
   var body: some View {
     ZStack {
-      colors.paper.ignoresSafeArea()
-      Canvas { context, size in
-        let step: CGFloat = 50
-        for x in stride(from: 0, to: size.width, by: step) {
-          var p = Path()
-          p.move(to: CGPoint(x: x, y: 0))
-          p.addLine(to: CGPoint(x: x, y: size.height))
-          context.stroke(p, with: .color(colors.ink.opacity(0.1)), lineWidth: 1)
+      // THE MAP
+      Map(position: $position) {
+        UserAnnotation()
+
+        // Mock Friend 1
+        Annotation(
+          "Iron Leg", coordinate: CLLocationCoordinate2D(latitude: 13.758, longitude: 100.503)
+        ) {
+          MapFriendPin(
+            name: "IRON LEG", colors: colors, status: "RUNNING 🏃", active: true, isUser: false)
         }
-        for y in stride(from: 0, to: size.height, by: step) {
-          var p = Path()
-          p.move(to: CGPoint(x: 0, y: y))
-          p.addLine(to: CGPoint(x: size.width, y: y))
-          context.stroke(p, with: .color(colors.ink.opacity(0.1)), lineWidth: 1)
+
+        // Mock Friend 2
+        Annotation(
+          "Speedcat", coordinate: CLLocationCoordinate2D(latitude: 13.754, longitude: 100.500)
+        ) {
+          MapFriendPin(
+            name: "SPEEDCAT", colors: colors, status: "AT GYM", active: false, isUser: false)
         }
-      }.ignoresSafeArea()
+
+        // Bonus Target
+        Annotation(
+          "Bonus", coordinate: CLLocationCoordinate2D(latitude: 13.755, longitude: 100.505)
+        ) {
+          MissionTargetPin(colors: colors)
+        }
+      }
+      .mapControls {
+        MapUserLocationButton()
+        MapCompass()
+      }
+      .mapStyle(.standard(elevation: .flat, pointsOfInterest: .all))
+
+      // COMIC OVERLAY
       VStack {
         HStack {
           Text("SQUAD RADAR").font(.system(size: 24, weight: .black)).padding(10).background(
             colors.accent
-          ).border(colors.ink, width: 3)
+          ).border(colors.ink, width: 3).comicPanel(color: colors.accent, ink: colors.ink)
+
           Spacer()
+
           Button(action: onDismiss) {
-            Image(systemName: "xmark").padding().background(colors.panel).border(
-              colors.ink, width: 3)
-          }.buttonStyle(.plain)
-        }.padding(.top, 50).padding(.horizontal, 30)
+            Image(systemName: "xmark").font(.headline.bold()).padding(12).background(colors.panel)
+              .border(
+                colors.ink, width: 3)
+          }.buttonStyle(.plain).comicPanel(color: colors.panel, ink: colors.ink, x: 4, y: 4)
+        }.padding(.top, 80).padding(.horizontal, 20)
+
         Spacer()
-        ZStack {
-          MapFriendPin(
-            name: "IRON LEG", offset: CGPoint(x: -80, y: -150), colors: colors, status: "RUNNING🏃",
-            active: true)
-          MapFriendPin(
-            name: "SPEEDCAT", offset: CGPoint(x: 100, y: 50), colors: colors, status: "AT GYM",
-            active: false)
-          MapFriendPin(
-            name: "YOU", offset: CGPoint(x: 0, y: -30), colors: colors, status: "RESTING",
-            active: false, isUser: true)
-          MissionTargetPin(offset: CGPoint(x: -120, y: 80), colors: colors)
-        }
-        Spacer()
+
+        // Legend
+        HStack {
+          VStack(alignment: .leading, spacing: 4) {
+            Text("SCANNING PROTOCOL...").font(.system(size: 10, weight: .bold, design: .monospaced))
+              .foregroundStyle(colors.ink)
+            HStack(spacing: 4) {
+              Circle().fill(.green).frame(width: 8, height: 8)
+              Text("ONLINE: 2").font(.caption.bold())
+            }
+          }.padding(10).background(colors.paper.opacity(0.9)).border(colors.ink, width: 2)
+          Spacer()
+        }.padding(20)
+      }
+    }
+    .onAppear {
+      // Optional: Trigger location update if needed
+      Task {
+        await healthManager.requestAuthorization()
       }
     }
   }
 }
 
+// MARK: - Map Components
+
 struct MissionTargetPin: View {
-  let offset: CGPoint
   let colors: RanColors
   @State private var pulse = false
   var body: some View {
     VStack {
       ZStack {
-        Circle().fill(colors.action.opacity(0.2)).frame(width: 80, height: 80).scaleEffect(
+        Circle().fill(colors.action.opacity(0.4)).frame(width: 60, height: 60).scaleEffect(
           pulse ? 1.2 : 1.0)
         Image(systemName: "target").font(.title).foregroundStyle(colors.action)
       }
-      Text("BONUS KM ZONE").font(.system(size: 8, weight: .black)).padding(4).background(
+      Text("BONUS XP").font(.system(size: 8, weight: .black)).padding(4).background(
         colors.action
-      ).foregroundStyle(.white)
-    }.offset(x: offset.x, y: offset.y).onAppear {
+      ).foregroundStyle(.white).border(colors.ink, width: 2)
+    }.onAppear {
       withAnimation(.easeInOut(duration: 1).repeatForever()) { pulse = true }
     }
   }
@@ -274,30 +319,43 @@ struct MissionTargetPin: View {
 
 struct MapFriendPin: View {
   let name: String
-  let offset: CGPoint
   let colors: RanColors
   let status: String
   let active: Bool
   var isUser: Bool = false
   @State private var bounce = false
+
   var body: some View {
     VStack(spacing: 5) {
       if active {
-        Text("POW!").font(.system(size: 10, weight: .black)).padding(4).background(colors.action)
-          .foregroundStyle(.white).offset(y: bounce ? -5 : 0)
+        Text("POW!").font(.system(size: 8, weight: .black)).padding(4).background(colors.action)
+          .foregroundStyle(.white).offset(y: bounce ? -5 : 0).border(colors.ink, width: 2)
       }
       ZStack {
         Rectangle().fill(isUser ? colors.accent : (active ? colors.sky : colors.panel)).frame(
-          width: 50, height: 50
+          width: 44, height: 44
         ).border(colors.ink, width: 3)
         Image(systemName: isUser ? "figure.run" : "person.fill").foregroundStyle(colors.ink)
-      }.offset(x: -3, y: -3).background(colors.ink.frame(width: 50, height: 50))
-      Text(name).font(.system(size: 10, weight: .black)).padding(.horizontal, 4).background(
-        colors.ink
-      ).foregroundStyle(.white)
-      Text(status).font(.system(size: 8, weight: .bold)).foregroundStyle(colors.ink.opacity(0.7))
-    }.offset(x: offset.x, y: offset.y).onAppear {
+      }.background(colors.ink.offset(x: 3, y: 3))
+
+      VStack(spacing: 0) {
+        Text(name).font(.system(size: 10, weight: .black)).padding(.horizontal, 4).background(
+          colors.ink
+        ).foregroundStyle(.white)
+        Text(status).font(.system(size: 8, weight: .bold)).padding(2).background(colors.paper)
+          .foregroundStyle(colors.ink)
+          .border(colors.ink, width: 1)
+      }
+    }.onAppear {
       if active { withAnimation(.easeInOut(duration: 0.6).repeatForever()) { bounce = true } }
     }
+    .shadow(radius: 4)
+  }
+}
+
+// Extension to avoid 'Value of type CLLocationCoordinate2D has no member offset' error
+extension CLLocationCoordinate2D {
+  func offset(lat: Double, long: Double) -> CLLocationCoordinate2D {
+    return CLLocationCoordinate2D(latitude: self.latitude + lat, longitude: self.longitude + long)
   }
 }

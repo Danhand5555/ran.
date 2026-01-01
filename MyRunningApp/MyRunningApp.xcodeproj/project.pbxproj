@@ -1,0 +1,510 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1A0000001000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000001 /* ContentView.swift */; };
+		1A0000001000000000000002 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000002 /* Components.swift */; };
+		1A0000001000000000000003 /* MissionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000003 /* MissionViews.swift */; };
+		1A0000001000000000000004 /* SquadViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000004 /* SquadViews.swift */; };
+		1A0000001000000000000005 /* RunViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000005 /* RunViews.swift */; };
+		1A0000001000000000000006 /* NavigationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000006 /* NavigationViews.swift */; };
+		1A0000001000000000000007 /* RanColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000007 /* RanColors.swift */; };
+		1A0000001000000000000008 /* CharacterLabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000008 /* CharacterLabView.swift */; };
+		1A0000001000000000000009 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002000000000000009 /* ProfileView.swift */; };
+		1A000000100000000000000A /* AchieverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000200000000000000A /* AchieverView.swift */; };
+		1A000000100000000000000B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A000000200000000000000B /* Assets.xcassets */; };
+		1A000000100000000000000C /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000200000000000000C /* HealthManager.swift */; };
+		1A000000100000000000000D /* OnboardingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000200000000000000D /* OnboardingViews.swift */; };
+		1A000000100000000000000E /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000200000000000000E /* FirebaseManager.swift */; };
+		1A000000100000000000000F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A000000200000000000000F /* GoogleService-Info.plist */; };
+		B123E6C92F06A8F600697951 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B123E6C82F06A8F600697951 /* FirebaseAuth */; };
+		B123E6CB2F06A8F600697951 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B123E6CA2F06A8F600697951 /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1A0000002000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1A0000002000000000000002 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		1A0000002000000000000003 /* MissionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionViews.swift; sourceTree = "<group>"; };
+		1A0000002000000000000004 /* SquadViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquadViews.swift; sourceTree = "<group>"; };
+		1A0000002000000000000005 /* RunViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunViews.swift; sourceTree = "<group>"; };
+		1A0000002000000000000006 /* NavigationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationViews.swift; sourceTree = "<group>"; };
+		1A0000002000000000000007 /* RanColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RanColors.swift; sourceTree = "<group>"; };
+		1A0000002000000000000008 /* CharacterLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterLabView.swift; sourceTree = "<group>"; };
+		1A0000002000000000000009 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		1A000000200000000000000A /* AchieverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchieverView.swift; sourceTree = "<group>"; };
+		1A000000200000000000000B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1A000000200000000000000C /* HealthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthManager.swift; sourceTree = "<group>"; };
+		1A000000200000000000000D /* OnboardingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViews.swift; sourceTree = "<group>"; };
+		1A000000200000000000000E /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
+		1A000000200000000000000F /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1A0000003000000000000001 /* ran.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ran.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1A0000004000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B123E6C92F06A8F600697951 /* FirebaseAuth in Frameworks */,
+				B123E6CB2F06A8F600697951 /* FirebaseFirestore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1A0000005000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				1A0000005000000000000002 /* Sources */,
+				1A0000005000000000000010 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000002 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000005000000000000003 /* MyRunningApp */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000003 /* MyRunningApp */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000002000000000000001 /* ContentView.swift */,
+				1A000000200000000000000F /* GoogleService-Info.plist */,
+				1A000000200000000000000B /* Assets.xcassets */,
+				1A0000005000000000000004 /* Shared */,
+				1A0000005000000000000005 /* Features */,
+				1A0000005000000000000006 /* Navigation */,
+				1A0000005000000000000007 /* Core */,
+			);
+			path = MyRunningApp;
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000004 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000002000000000000002 /* Components.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000005 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000005000000000000008 /* Mission */,
+				1A0000005000000000000009 /* Squad */,
+				1A000000500000000000000A /* Run */,
+				1A000000500000000000000B /* Profile */,
+				1A000000500000000000000C /* Rewards */,
+				1A000000500000000000000D /* Onboarding */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000006 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000002000000000000006 /* NavigationViews.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000007 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000002000000000000007 /* RanColors.swift */,
+				1A000000200000000000000C /* HealthManager.swift */,
+				1A000000200000000000000E /* FirebaseManager.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000008 /* Mission */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000002000000000000003 /* MissionViews.swift */,
+			);
+			path = Mission;
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000009 /* Squad */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000002000000000000004 /* SquadViews.swift */,
+			);
+			path = Squad;
+			sourceTree = "<group>";
+		};
+		1A000000500000000000000A /* Run */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000002000000000000005 /* RunViews.swift */,
+			);
+			path = Run;
+			sourceTree = "<group>";
+		};
+		1A000000500000000000000B /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000002000000000000008 /* CharacterLabView.swift */,
+				1A0000002000000000000009 /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		1A000000500000000000000C /* Rewards */ = {
+			isa = PBXGroup;
+			children = (
+				1A000000200000000000000A /* AchieverView.swift */,
+			);
+			path = Rewards;
+			sourceTree = "<group>";
+		};
+		1A000000500000000000000D /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				1A000000200000000000000D /* OnboardingViews.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		1A0000005000000000000010 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000003000000000000001 /* ran.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1A0000006000000000000001 /* ran */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A0000008000000000000001 /* Build configuration list for PBXNativeTarget "ran" */;
+			buildPhases = (
+				1A0000007000000000000001 /* Sources */,
+				1A0000004000000000000001 /* Frameworks */,
+				1A0000004000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ran;
+			productName = ran;
+			productReference = 1A0000003000000000000001 /* ran.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1A0000009000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					1A0000006000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 1A000000A000000000000001 /* Build configuration list for PBXProject "MyRunningApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1A0000005000000000000001;
+			packageReferences = (
+				B123E6C72F06A8F600697951 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
+			productRefGroup = 1A0000005000000000000010 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1A0000006000000000000001 /* ran */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1A0000004000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A000000100000000000000B /* Assets.xcassets in Resources */,
+				1A000000100000000000000F /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1A0000007000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A0000001000000000000001 /* ContentView.swift in Sources */,
+				1A0000001000000000000002 /* Components.swift in Sources */,
+				1A0000001000000000000003 /* MissionViews.swift in Sources */,
+				1A0000001000000000000004 /* SquadViews.swift in Sources */,
+				1A0000001000000000000005 /* RunViews.swift in Sources */,
+				1A0000001000000000000006 /* NavigationViews.swift in Sources */,
+				1A0000001000000000000007 /* RanColors.swift in Sources */,
+				1A0000001000000000000008 /* CharacterLabView.swift in Sources */,
+				1A0000001000000000000009 /* ProfileView.swift in Sources */,
+				1A000000100000000000000A /* AchieverView.swift in Sources */,
+				1A000000100000000000000C /* HealthManager.swift in Sources */,
+				1A000000100000000000000D /* OnboardingViews.swift in Sources */,
+				1A000000100000000000000E /* FirebaseManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1A000000B000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		1A000000B000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1A000000C000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = T745QWBMD6;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "ran. needs access to your health data to track your runs, steps, and fitness progress.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "ran. needs to save your workout data to Apple Health.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "ran. needs your location to track your running route even when the app is in the background.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "ran. needs your location to track your running route and distance.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "ran. uses motion data to count your steps and detect your activity.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = location;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dann.ran;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1A000000C000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = T745QWBMD6;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "ran. needs access to your health data to track your runs, steps, and fitness progress.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "ran. needs to save your workout data to Apple Health.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "ran. needs your location to track your running route even when the app is in the background.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "ran. needs your location to track your running route and distance.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "ran. uses motion data to count your steps and detect your activity.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = location;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dann.ran;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1A0000008000000000000001 /* Build configuration list for PBXNativeTarget "ran" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A000000C000000000000001 /* Debug */,
+				1A000000C000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A000000A000000000000001 /* Build configuration list for PBXProject "MyRunningApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A000000B000000000000001 /* Debug */,
+				1A000000B000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B123E6C72F06A8F600697951 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B123E6C82F06A8F600697951 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B123E6C72F06A8F600697951 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		B123E6CA2F06A8F600697951 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B123E6C72F06A8F600697951 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1A0000009000000000000001 /* Project object */;
+}

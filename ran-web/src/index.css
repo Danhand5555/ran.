@@ -248,6 +248,70 @@ body {
   color: var(--accent);
 }
 
+/* Progress Bar */
+.progress-container {
+  max-width: 600px;
+  margin: 60px auto 0;
+  text-align: left;
+}
+
+.progress-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.progress-track {
+  height: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--action);
+  position: relative;
+  /* Striped pattern */
+  background-image: linear-gradient(45deg,
+      rgba(0, 0, 0, 0.15) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.15) 50%,
+      rgba(0, 0, 0, 0.15) 75%,
+      transparent 75%,
+      transparent);
+  background-size: 20px 20px;
+  animation: progress-stripe 1s linear infinite;
+}
+
+@keyframes progress-stripe {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 20px 0;
+  }
+}
+
+.progress-status {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  opacity: 0.4;
+  margin-top: 8px;
+  text-align: right;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
 .countdown-unit {
   font-size: 12px;
   text-transform: uppercase;

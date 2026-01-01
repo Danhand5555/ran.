@@ -9,71 +9,100 @@ struct RanContentView: View {
   @State private var lastRunDistance = 0.0
   @Environment(\.colorScheme) private var colorScheme
 
+  @AppStorage("isFirstLaunch") private var isFirstLaunch = true
+  @StateObject private var firebaseManager = FirebaseManager()
+  @StateObject private var healthManager = HealthManager()
+
   var body: some View {
     let colors = RanColors(scheme: colorScheme)
 
-    ZStack {
-      ZineBackground(colors: colors)
+    if isFirstLaunch {
+      OnboardingView(colors: colors, firebaseManager: firebaseManager) {
+        withAnimation { isFirstLaunch = false }
+      }
+    } else {
 
-      VStack(spacing: 0) {
-        BrandingHeader(colors: colors, selectedTab: $selectedTab)
-          .padding(.top, 40).padding(.horizontal, 30)
-
-        Spacer(minLength: 20)
-
+      GeometryReader { geo in
         ZStack {
-          switch selectedTab {
-          case 0:
-            RunTab(colors: colors) {
-              withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { isRunning = true }
+          ZineBackground(colors: colors)
+
+          VStack(spacing: 0) {
+            // Top safe area spacer for Dynamic Island/notch
+            Color.clear.frame(height: geo.safeAreaInsets.top + 10)
+
+            BrandingHeader(colors: colors, selectedTab: $selectedTab)
+              .padding(.horizontal, 20)
+
+            Spacer(minLength: 10)
+
+            // Swipeable Content Area
+            TabView(selection: $selectedTab) {
+              RunTab(colors: colors) {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { isRunning = true }
+              }
+              .tag(0)
+
+              AchieverTab(colors: colors)
+                .tag(1)
+
+              SquadTab(colors: colors, showMap: $showMap)
+                .tag(2)
+
+              ProfileTab(colors: colors) { withAnimation(.spring()) { showCharacterLab = true } }
+                .tag(3)
             }
-          case 1: SquadTab(colors: colors, showMap: $showMap)
-          case 2: AchieverTab(colors: colors)
-          case 3:
-            ProfileTab(colors: colors) { withAnimation(.spring()) { showCharacterLab = true } }
-          default: EmptyView()
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            Spacer(minLength: 10)
+
+            RanNavBar(selected: $selectedTab, colors: colors)
+              .padding(.horizontal, 20)
+
+            // Bottom safe area spacer for home indicator
+            Color.clear.frame(height: geo.safeAreaInsets.bottom + 15)
+          }
+          .blur(radius: isRunning || showSuccessSplash || showMap || showCharacterLab ? 20 : 0)
+          .scaleEffect(isRunning || showSuccessSplash || showMap || showCharacterLab ? 0.9 : 1.0)
+
+          if isRunning {
+            ActiveRunPage(colors: colors) { finalDist in
+              lastRunDistance = finalDist
+              withAnimation(.spring()) {
+                isRunning = false
+                showSuccessSplash = true
+              }
+            }
+            .transition(.move(edge: .bottom))
+          }
+
+          if showSuccessSplash {
+            MissionCompleteSplash(colors: colors, distance: lastRunDistance) {
+              withAnimation(.spring()) { showSuccessSplash = false }
+            }
+            .transition(.scale.combined(with: .opacity))
+          }
+
+          if showMap {
+            SquadMapView(colors: colors) { withAnimation(.spring()) { showMap = false } }
+              .transition(.move(edge: .bottom))
+          }
+
+          if showCharacterLab {
+            CharacterLabView(colors: colors) {
+              withAnimation(.spring()) { showCharacterLab = false }
+            }
+            .transition(.move(edge: .bottom))
           }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .animation(.spring(), value: selectedTab)
-
-        Spacer(minLength: 40)
-
-        RanNavBar(selected: $selectedTab, colors: colors)
-          .padding(.bottom, 30).padding(.horizontal, 40)
+        .ignoresSafeArea()
       }
-      .blur(radius: isRunning || showSuccessSplash || showMap || showCharacterLab ? 20 : 0)
-      .scaleEffect(isRunning || showSuccessSplash || showMap || showCharacterLab ? 0.9 : 1.0)
-
-      if isRunning {
-        ActiveRunPage(colors: colors) { finalDist in
-          lastRunDistance = finalDist
-          withAnimation(.spring()) {
-            isRunning = false
-            showSuccessSplash = true
-          }
-        }
-        .transition(.move(edge: .bottom))
-      }
-
-      if showSuccessSplash {
-        MissionCompleteSplash(colors: colors, distance: lastRunDistance) {
-          withAnimation(.spring()) { showSuccessSplash = false }
-        }
-        .transition(.scale.combined(with: .opacity))
-      }
-
-      if showMap {
-        SquadMapView(colors: colors) { withAnimation(.spring()) { showMap = false } }
-          .transition(.move(edge: .bottom))
-      }
-
-      if showCharacterLab {
-        CharacterLabView(colors: colors) { withAnimation(.spring()) { showCharacterLab = false } }
-          .transition(.move(edge: .bottom))
-      }
+      .environmentObject(firebaseManager)
+      .environmentObject(healthManager)
+      #if os(macOS)
+        .frame(minWidth: 500, minHeight: 850)
+      #endif
     }
-    .frame(minWidth: 500, minHeight: 850)
   }
 }
 
@@ -107,15 +136,15 @@ struct RanNavBar: View {
   var body: some View {
     HStack(spacing: 0) {
       NavTabItem(icon: "figure.run", title: "RUN", active: selected == 0, colors: colors) {
-        selected = 0
+        withAnimation { selected = 0 }
       }
       Spacer()
-      NavTabItem(icon: "star.fill", title: "TROPHIES", active: selected == 2, colors: colors) {
-        selected = 2
+      NavTabItem(icon: "star.fill", title: "TROPHIES", active: selected == 1, colors: colors) {
+        withAnimation { selected = 1 }
       }
       Spacer()
-      NavTabItem(icon: "person.3.fill", title: "SQUAD", active: selected == 1, colors: colors) {
-        selected = 1
+      NavTabItem(icon: "person.3.fill", title: "SQUAD", active: selected == 2, colors: colors) {
+        withAnimation { selected = 2 }
       }
     }.padding(.horizontal, 40).padding(.vertical, 12).background(colors.panel).border(
       colors.ink, width: RanColors.thickness

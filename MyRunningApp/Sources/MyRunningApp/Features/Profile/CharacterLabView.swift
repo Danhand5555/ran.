@@ -35,6 +35,9 @@ struct CharacterLabView: View {
       }.ignoresSafeArea()
 
       VStack(spacing: 0) {
+        // Safe Area Spacer
+        Color.clear.frame(height: 80)
+
         // Header
         HStack {
           VStack(alignment: .leading, spacing: 0) {
@@ -49,7 +52,8 @@ struct CharacterLabView: View {
               .foregroundStyle(.white).border(.white, width: 3)
           }.buttonStyle(.plain)
         }
-        .padding(30)
+        .padding(.horizontal, 30)  // Reduced top padding since spacer handles it
+        .padding(.bottom, 20)
 
         // Hero Preview Section
         ZStack {
@@ -70,16 +74,16 @@ struct CharacterLabView: View {
           VStack {
             ZStack {
               // Main Body
-              Circle().fill(selectedColor).frame(width: 180, height: 180)
+              Circle().fill(selectedColor).frame(width: 160, height: 160)  // Slightly smaller
                 .border(.white, width: 6)
                 .shadow(color: selectedColor.opacity(0.5), radius: 20)
 
               // Mask Overlay
               if selectedMask != "None" {
                 Text(selectedMask == "Domino" ? "👓" : (selectedMask == "Full Mask" ? "🎭" : "🎗️"))
-                  .font(.system(size: 80))
+                  .font(.system(size: 70))
               } else {
-                Image(systemName: "figure.run").font(.system(size: 80)).foregroundStyle(.white)
+                Image(systemName: "figure.run").font(.system(size: 70)).foregroundStyle(.white)
               }
             }
             .rotation3DEffect(.degrees(rotation), axis: (x: 0, y: 1, z: 0))
@@ -89,7 +93,7 @@ struct CharacterLabView: View {
             ).foregroundStyle(.white)
           }
         }
-        .frame(maxWidth: .infinity).frame(height: 350)
+        .frame(maxWidth: .infinity).frame(height: 300)  // Reduced height
         .background(colors.ink.opacity(0.5))
         .border(colors.sky, width: 2)
         .padding(.horizontal, 30)
@@ -145,7 +149,9 @@ struct CharacterLabView: View {
             color: colors.sky, ink: .white)
         }
         .buttonStyle(.plain)
-        .padding(30)
+        .padding(.horizontal, 30)
+        .padding(.top, 20)
+        .padding(.bottom, 60)
       }
       .onAppear {
         withAnimation(.linear(duration: 12).repeatForever(autoreverses: false)) {

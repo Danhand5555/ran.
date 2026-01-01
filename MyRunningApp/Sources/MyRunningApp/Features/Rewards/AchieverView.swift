@@ -97,7 +97,7 @@ struct AchieverTab: View {
             }
           }.padding(.bottom, 40)
         }
-      }.padding(.horizontal, 30)
+      }.padding(.horizontal, 20)
 
       // Detail Overlay
       if let trophy = selectedTrophy {
