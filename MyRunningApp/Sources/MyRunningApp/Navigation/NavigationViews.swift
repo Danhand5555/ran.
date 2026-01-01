@@ -7,9 +7,10 @@ struct RanContentView: View {
   @State private var showMap = false
   @State private var showCharacterLab = false
   @State private var lastRunDistance = 0.0
+  @Environment(\.colorScheme) private var colorScheme
 
   var body: some View {
-    let colors = RanColors()
+    let colors = RanColors(scheme: colorScheme)
 
     ZStack {
       ZineBackground(colors: colors)
