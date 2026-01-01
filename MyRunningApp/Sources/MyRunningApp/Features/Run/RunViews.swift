@@ -27,6 +27,10 @@ struct RunTab: View {
             .comicPanel(color: colors.accent, ink: colors.ink)
             .rotationEffect(.degrees(-3))
         }
+
+        // Fire badge
+        FireStreakBadge(colors: colors)
+          .offset(x: 100, y: -80)
       }
       .frame(height: 280)
       .onAppear { isPulsing = true }
