@@ -93,13 +93,13 @@ function App() {
         {/* Progress Bar */}
         <div className="progress-container">
           <div className="progress-label-row">
-            <span>SYSTEM INITIALIZATION</span>
-            <span>86%</span>
+            <span>UPLINK ESTABLISHED</span>
+            <span>95%</span>
           </div>
           <div className="progress-track">
-            <div className="progress-fill" style={{ width: '86%' }}></div>
+            <div className="progress-fill" style={{ width: '95%' }}></div>
           </div>
-          <div className="progress-status">OPTIMIZING NEURAL PATHWAYS [████████░░]</div>
+          <div className="progress-status">STREAK CLOUD SYNCED [█████████░]</div>
         </div>
       </section>
 
@@ -122,11 +122,11 @@ function App() {
               </p>
               <div className="stats-row">
                 <div className="stat-item">
-                  <span className="stat-value">2.4M</span>
+                  <span className="stat-value">2.5M</span>
                   <span className="stat-label">Missions Logged</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-value">12K</span>
+                  <span className="stat-value">14K</span>
                   <span className="stat-label">Heroes Active</span>
                 </div>
               </div>
