@@ -1,11 +1,12 @@
 import SwiftUI
 
+@available(iOS 17.0, *)
 struct RunTab: View {
   let colors: RanColors
   let onStart: () -> Void
   @State private var isPulsing = false
   @State private var streakDays = 14
-  @StateObject private var healthManager = HealthManager()
+  @EnvironmentObject var healthManager: HealthManager
 
   var body: some View {
     ScrollView(showsIndicators: false) {
@@ -196,12 +197,13 @@ struct RunStatBox: View {
 }
 
 // MARK: - Active Run Page
+@available(iOS 17.0, *)
 struct ActiveRunPage: View {
   let colors: RanColors
   let onStop: (Double) -> Void
 
   @StateObject private var locationManager = LocationManager()
-  @StateObject private var healthManager = HealthManager()
+  @EnvironmentObject var healthManager: HealthManager
 
   @State private var elapsedTime: TimeInterval = 0
   @State private var calories = 0
@@ -283,8 +285,27 @@ struct ActiveRunPage: View {
 
         // Stop Button
         Button(action: {
-          locationManager.stopTracking()
-          onStop(locationManager.totalDistance)
+          let distance = locationManager.totalDistance
+          let duration = elapsedTime
+          let finalCalories = Double(calories)
+          let coords = locationManager.routeCoordinates
+          let avgHeartRate = healthManager.currentHeartRate
+          let avgPace = locationManager.currentPace
+
+          Task {
+            await healthManager.saveWorkout(
+              distance: distance,
+              duration: duration,
+              calories: finalCalories,
+              pace: avgPace,
+              heartRate: avgHeartRate,
+              coordinates: coords
+            )
+
+            locationManager.stopTracking()
+            healthManager.stopWorkout()
+            onStop(distance)
+          }
         }) {
           HStack {
             Image(systemName: "flag.checkered")
@@ -307,6 +328,7 @@ struct ActiveRunPage: View {
       locationManager.startTracking()
       Task {
         await healthManager.requestAuthorization()
+        healthManager.startWorkout()
       }
     }
     .onReceive(timerJob) { _ in

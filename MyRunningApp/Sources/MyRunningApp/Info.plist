@@ -39,5 +39,9 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+    <key>NSHealthShareUsageDescription</key>
+    <string>We use your health data to track your workouts and show you metrics like heart rate and distance.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>We use your health data to save your workouts to Apple Health.</string>
 </dict>
 </plist>

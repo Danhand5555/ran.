@@ -3,6 +3,7 @@ import SwiftUI
 struct ProfileTab: View {
   let colors: RanColors
   let onCustomize: () -> Void
+  let onViewLogs: () -> Void
 
   @EnvironmentObject var firebaseManager: FirebaseManager
   @EnvironmentObject var healthManager: HealthManager
@@ -56,6 +57,14 @@ struct ProfileTab: View {
             Text("CUSTOMIZE CHARACTER")
           }.font(.headline.bold()).padding().frame(maxWidth: .infinity).background(colors.sky)
             .comicPanel(color: colors.sky, ink: colors.ink, x: 5, y: 5)
+        }.buttonStyle(.plain)
+
+        Button(action: onViewLogs) {
+          HStack {
+            Image(systemName: "list.bullet.clipboard.fill")
+            Text("VIEW MISSION LOGS")
+          }.font(.headline.bold()).padding().frame(maxWidth: .infinity).background(colors.accent)
+            .comicPanel(color: colors.accent, ink: colors.ink, x: 5, y: 5)
         }.buttonStyle(.plain)
       }.padding(.horizontal, 20).padding(.bottom, 20)
     }

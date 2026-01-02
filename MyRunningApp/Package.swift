@@ -19,7 +19,8 @@ let package = Package(
       ],
       path: "Sources/MyRunningApp",
       resources: [
-        .process("Info.plist")
+        .process("Info.plist"),
+        .process("GoogleService-Info.plist"),
       ]
     )
   ]

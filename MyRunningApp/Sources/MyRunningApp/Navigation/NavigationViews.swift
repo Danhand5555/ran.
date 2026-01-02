@@ -1,16 +1,18 @@
 import SwiftUI
 
+@available(iOS 17.0, *)
 struct RanContentView: View {
   @State private var selectedTab = 0
   @State private var isRunning = false
   @State private var showSuccessSplash = false
   @State private var showMap = false
   @State private var showCharacterLab = false
+  @State private var showRunHistory = false
   @State private var lastRunDistance = 0.0
   @Environment(\.colorScheme) private var colorScheme
 
   @AppStorage("isFirstLaunch") private var isFirstLaunch = true
-  @StateObject private var firebaseManager = FirebaseManager()
+  @StateObject private var firebaseManager = FirebaseManager.shared
   @StateObject private var healthManager = HealthManager()
 
   var body: some View {
@@ -48,8 +50,12 @@ struct RanContentView: View {
               SquadTab(colors: colors, showMap: $showMap)
                 .tag(2)
 
-              ProfileTab(colors: colors) { withAnimation(.spring()) { showCharacterLab = true } }
-                .tag(3)
+              ProfileTab(
+                colors: colors,
+                onCustomize: { withAnimation(.spring()) { showCharacterLab = true } },
+                onViewLogs: { showRunHistory = true }
+              )
+              .tag(3)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -96,6 +102,11 @@ struct RanContentView: View {
           }
         }
         .ignoresSafeArea()
+        .sheet(isPresented: $showRunHistory) {
+          RunHistoryView(colors: colors)
+            .environmentObject(firebaseManager)
+            .environmentObject(healthManager)
+        }
       }
       .environmentObject(firebaseManager)
       .environmentObject(healthManager)

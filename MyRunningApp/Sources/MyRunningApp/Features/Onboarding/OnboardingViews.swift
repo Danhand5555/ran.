@@ -144,14 +144,27 @@ struct OnboardingView: View {
                   showStamp = true
                 }
 
-                // Sign up anonymously
                 Task {
-                  try? await firebaseManager.signInAnonymously()
-                  try? await firebaseManager.updateProfile(name: name)
-                }
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                  onComplete()
+                  do {
+                    print("DEBUG: Onboarding - Starting anonymous sign-in...")
+                    try await firebaseManager.signInAnonymously()
+                    try await firebaseManager.updateProfile(name: name)
+                    print("DEBUG: Onboarding - Sign-in successful!")
+                    
+                    // Small delay for the animation to look nice
+                    try? await Task.sleep(nanoseconds: 300_000_000)
+                    
+                    await MainActor.run {
+                      onComplete()
+                    }
+                  } catch {
+                    print("DEBUG: Onboarding - Sign-in failed: \(error)")
+                    // Even if it fails, maybe let them in? Or show an error?
+                    // For now, let's keep it simple but logged.
+                    await MainActor.run {
+                      onComplete()
+                    }
+                  }
                 }
               }) {
                 Text("CONFIRM IDENTITY")
