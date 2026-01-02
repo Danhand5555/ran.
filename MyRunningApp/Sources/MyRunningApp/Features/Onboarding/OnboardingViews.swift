@@ -99,7 +99,9 @@ struct OnboardingView: View {
                   TextField("TAP TO ENTER NAME", text: $name)
                     .font(.system(size: 24, weight: .black, design: .monospaced))
                     .foregroundStyle(colors.ink)
-                    .textInputAutocapitalization(.characters)
+                    #if os(iOS)
+                      .textInputAutocapitalization(.characters)
+                    #endif
                     .disableAutocorrection(true)
                     .onChange(of: name) {
                       if name.count > 12 { name = String(name.prefix(12)) }
@@ -150,10 +152,10 @@ struct OnboardingView: View {
                     try await firebaseManager.signInAnonymously()
                     try await firebaseManager.updateProfile(name: name)
                     print("DEBUG: Onboarding - Sign-in successful!")
-                    
+
                     // Small delay for the animation to look nice
                     try? await Task.sleep(nanoseconds: 300_000_000)
-                    
+
                     await MainActor.run {
                       onComplete()
                     }

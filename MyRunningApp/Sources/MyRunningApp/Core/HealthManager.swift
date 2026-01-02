@@ -495,7 +495,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 // MARK: - Motion Manager
 class MotionManager: ObservableObject {
   private let pedometer = CMPedometer()
-  private let motionManager = CMMotionActivityManager()
+  #if os(iOS)
+    private let motionManager = CMMotionActivityManager()
+  #endif
 
   @Published var todaySteps: Int = 0
   @Published var currentCadence: Int = 0  // steps per minute
@@ -507,7 +509,11 @@ class MotionManager: ObservableObject {
   }
 
   var isActivityAvailable: Bool {
-    CMMotionActivityManager.isActivityAvailable()
+    #if os(iOS)
+      return CMMotionActivityManager.isActivityAvailable()
+    #else
+      return false
+    #endif
   }
 
   func startTracking() {
@@ -517,32 +523,38 @@ class MotionManager: ObservableObject {
 
     // Query today's steps
     pedometer.queryPedometerData(from: startOfDay, to: Date()) { [weak self] data, error in
-      DispatchQueue.main.async {
-        self?.todaySteps = Int(data?.numberOfSteps ?? 0)
+      if let steps = data?.numberOfSteps {
+        DispatchQueue.main.async {
+          self?.todaySteps = steps.intValue
+        }
       }
     }
 
     // Start live updates
     pedometer.startUpdates(from: Date()) { [weak self] data, error in
-      DispatchQueue.main.async {
-        if let cadence = data?.currentCadence?.intValue {
-          self?.currentCadence = cadence
+      if let cadence = data?.currentCadence {
+        DispatchQueue.main.async {
+          self?.currentCadence = cadence.intValue
         }
       }
     }
 
     // Start activity tracking
     if isActivityAvailable {
-      motionManager.startActivityUpdates(to: .main) { [weak self] activity in
-        self?.isRunning = activity?.running ?? false
-        self?.isWalking = activity?.walking ?? false
-      }
+      #if os(iOS)
+        motionManager.startActivityUpdates(to: .main) { [weak self] activity in
+          self?.isRunning = activity?.running ?? false
+          self?.isWalking = activity?.walking ?? false
+        }
+      #endif
     }
   }
 
   func stopTracking() {
     pedometer.stopUpdates()
-    motionManager.stopActivityUpdates()
+    #if os(iOS)
+      motionManager.stopActivityUpdates()
+    #endif
   }
 }
 

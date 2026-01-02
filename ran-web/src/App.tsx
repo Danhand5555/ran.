@@ -29,12 +29,35 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  const [region, setRegion] = useState(0);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
       setSubmitted(true);
       setEmail('');
     }
+  };
+
+  const RegionSlider = () => {
+    const regions = ['BKK/HQ', 'GLOBAL', 'PRIVATE'];
+    return (
+      <div className="liquid-slider-container">
+        <div
+          className="active-pill"
+          style={{ transform: `translateX(${region * 100}px)` }}
+        />
+        {regions.map((name, i) => (
+          <button
+            key={name}
+            className={`liquid-slider-btn ${region === i ? 'active' : ''}`}
+            onClick={() => setRegion(i)}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -93,13 +116,13 @@ function App() {
         {/* Progress Bar */}
         <div className="progress-container">
           <div className="progress-label-row">
-            <span>UPLINK ESTABLISHED</span>
-            <span>95%</span>
+            <span>SYSTEM OPTIMIZATION: FINALIZING</span>
+            <span>99%</span>
           </div>
           <div className="progress-track">
-            <div className="progress-fill" style={{ width: '95%' }}></div>
+            <div className="progress-fill" style={{ width: '99%' }}></div>
           </div>
-          <div className="progress-status">STREAK CLOUD SYNCED [█████████░]</div>
+          <div className="progress-status">LIQUID GLASS UI: DEPLOYED [██████████]</div>
         </div>
       </section>
 
@@ -130,6 +153,7 @@ function App() {
                   <span className="stat-label">Heroes Active</span>
                 </div>
               </div>
+              <RegionSlider />
             </div>
           </div>
         </div>

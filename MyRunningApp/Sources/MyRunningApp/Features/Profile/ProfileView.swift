@@ -8,6 +8,20 @@ struct ProfileTab: View {
   @EnvironmentObject var firebaseManager: FirebaseManager
   @EnvironmentObject var healthManager: HealthManager
 
+  @State private var showLogoutConfirmation = false
+  @AppStorage("userAvatarColor") private var userAvatarColorName: String = "red"
+
+  private var avatarColor: Color {
+    switch userAvatarColorName {
+    case "blue": return .blue
+    case "green": return .green
+    case "orange": return .orange
+    case "purple": return .purple
+    case "cyan": return .cyan
+    default: return .red
+    }
+  }
+
   var body: some View {
     let name = firebaseManager.currentUser?.displayName ?? "UNKNOWN AGENT"
     let joinDate = "MEMBER SINCE ISSUE #1"  // Could format creation date later
@@ -15,13 +29,13 @@ struct ProfileTab: View {
     ScrollView {
       VStack(spacing: 30) {
         ZStack {
-          SpeedLines(ink: colors.ink, isRotating: false)
+          SpeedLines(ink: avatarColor, isRotating: false)
           VStack {
             ZStack {
-              Circle().fill(colors.accent).frame(width: 140, height: 140).border(
+              Circle().fill(avatarColor).frame(width: 140, height: 140).border(
                 colors.ink, width: 4
-              ).shadow(color: colors.ink, radius: 0, x: 8, y: 8)
-              Image(systemName: "figure.run").font(.system(size: 60)).foregroundStyle(colors.ink)
+              ).shadow(color: avatarColor.opacity(0.5), radius: 15, x: 8, y: 8)
+              Image(systemName: "figure.run").font(.system(size: 60)).foregroundStyle(colors.paper)
             }
             Text(name.uppercased())
               .font(.system(size: 32, weight: .black))
@@ -66,12 +80,33 @@ struct ProfileTab: View {
           }.font(.headline.bold()).padding().frame(maxWidth: .infinity).background(colors.accent)
             .comicPanel(color: colors.accent, ink: colors.ink, x: 5, y: 5)
         }.buttonStyle(.plain)
+
+        // Logout Button
+        Button(action: { showLogoutConfirmation = true }) {
+          HStack {
+            Image(systemName: "rectangle.portrait.and.arrow.right")
+            Text("SIGN OUT")
+          }.font(.headline.bold()).padding().frame(maxWidth: .infinity).background(colors.action)
+            .comicPanel(color: colors.action, ink: colors.ink, x: 5, y: 5)
+        }.buttonStyle(.plain)
       }.padding(.horizontal, 20).padding(.bottom, 20)
     }
     .onAppear {
       Task {
         await healthManager.fetchTodayStats()
       }
+    }
+    .alert("CONFIRM SIGN OUT", isPresented: $showLogoutConfirmation) {
+      Button("CANCEL", role: .cancel) {}
+      Button("SIGN OUT", role: .destructive) {
+        do {
+          try firebaseManager.signOut()
+        } catch {
+          print("DEBUG: Sign out failed: \(error)")
+        }
+      }
+    } message: {
+      Text("Are you sure you want to sign out?")
     }
   }
 }

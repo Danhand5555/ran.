@@ -95,7 +95,7 @@ struct AchieverTab: View {
                 }
               }
             }
-          }.padding(.bottom, 40)
+          }.padding(.bottom, 100)  // Extra space for floating tab bar
         }
       }.padding(.horizontal, 20)
 

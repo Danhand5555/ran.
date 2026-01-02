@@ -107,7 +107,10 @@ struct CharacterLabView: View {
                 ForEach(colorOptions, id: \.self) { color in
                   Circle().fill(color).frame(width: 40, height: 40)
                     .overlay(Circle().stroke(.white, lineWidth: selectedColor == color ? 4 : 0))
-                    .onTapGesture { withAnimation { selectedColor = color } }
+                    .onTapGesture {
+                      HapticManager.shared.triggerSelection()
+                      withAnimation { selectedColor = color }
+                    }
                 }
               }
             }
@@ -120,7 +123,10 @@ struct CharacterLabView: View {
                     .background(selectedMask == mask ? colors.sky : Color.white.opacity(0.1))
                     .foregroundStyle(selectedMask == mask ? .black : .white)
                     .border(.white, width: 2)
-                    .onTapGesture { withAnimation { selectedMask = mask } }
+                    .onTapGesture {
+                      HapticManager.shared.triggerSelection()
+                      withAnimation { selectedMask = mask }
+                    }
                 }
               }
             }
@@ -133,7 +139,10 @@ struct CharacterLabView: View {
                     .background(selectedAura == aura ? colors.accent : Color.white.opacity(0.1))
                     .foregroundStyle(selectedAura == aura ? .black : .white)
                     .border(.white, width: 2)
-                    .onTapGesture { withAnimation { selectedAura = aura } }
+                    .onTapGesture {
+                      HapticManager.shared.triggerSelection()
+                      withAnimation { selectedAura = aura }
+                    }
                 }
               }
             }
@@ -142,7 +151,10 @@ struct CharacterLabView: View {
         }
 
         // Footer Action
-        Button(action: onDismiss) {
+        Button(action: {
+          HapticManager.shared.triggerMedium()
+          onDismiss()
+        }) {
           Text("EQUIP HERO GEAR").font(.title3.bold()).padding(.vertical, 20).frame(
             maxWidth: .infinity
           ).background(colors.sky).foregroundStyle(.black).comicPanel(

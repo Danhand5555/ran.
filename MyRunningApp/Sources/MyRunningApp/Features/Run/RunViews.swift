@@ -5,7 +5,7 @@ struct RunTab: View {
   let colors: RanColors
   let onStart: () -> Void
   @State private var isPulsing = false
-  @State private var streakDays = 14
+  @State private var streakDays = 0
   @EnvironmentObject var healthManager: HealthManager
 
   var body: some View {
@@ -76,7 +76,10 @@ struct RunTab: View {
         Spacer().frame(height: 25)
 
         // Start Button
-        Button(action: onStart) {
+        Button(action: {
+          HapticManager.shared.triggerMedium()
+          onStart()
+        }) {
           HStack(spacing: 12) {
             Image(systemName: "play.fill")
             Text("START MISSION")
@@ -98,10 +101,10 @@ struct RunTab: View {
             value: String(format: "%.1f km", healthManager.weeklyDistance),
             colors: colors
           )
-          QuickStat(label: "Best Streak", value: "21 days", colors: colors)
+          QuickStat(label: "Best Streak", value: "0 days", colors: colors)
         }
         .padding(.top, 20)
-        .padding(.bottom, 10)
+        .padding(.bottom, 100)  // Extra space for floating tab bar
       }
     }
     .onAppear {
@@ -320,7 +323,7 @@ struct ActiveRunPage: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 20)
-        .padding(.bottom, 60)  // Increased padding to lift button off the bottom edge
+        .padding(.bottom, 100)  // Extra space for floating tab bar
       }
     }
     .onAppear {

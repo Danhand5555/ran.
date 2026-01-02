@@ -1,24 +1,30 @@
 import SwiftUI
+
 #if os(iOS)
-import UIKit
+  import UIKit
 #endif
 
 struct SharingCardView: View {
   let colors: RanColors
   let distance: Double
   let onBack: () -> Void
+  let heroName: String
+  let streakDays: Int
 
   let xpGained: Int
   let timeElapsed: String
-  let heroName: String
 
-  init(colors: RanColors, distance: Double, onBack: @escaping () -> Void) {
+  init(
+    colors: RanColors, distance: Double, heroName: String, streakDays: Int,
+    onBack: @escaping () -> Void
+  ) {
     self.colors = colors
     self.distance = distance
+    self.heroName = heroName
+    self.streakDays = streakDays
     self.onBack = onBack
     self.xpGained = Int(distance * 100)
     self.timeElapsed = String(format: "%02d:%02d", Int(distance * 6), Int.random(in: 10...59))
-    self.heroName = "DANN THE FLASH"
   }
 
   var cardContent: some View {
@@ -95,28 +101,28 @@ struct SharingCardView: View {
           HStack(spacing: 30) {
             MiniStat(label: "TIME", value: timeElapsed, colors: colors)
             MiniStat(label: "XP", value: "+\(xpGained)", colors: colors)
-            MiniStat(label: "STREAK", value: "14 🔥", colors: colors)
+            MiniStat(label: "STREAK", value: "\(streakDays) 🔥", colors: colors)
           }
           .padding(.top, 10)
         }
 
-        // Stickers
+        // Stickers - positioned in corners to avoid text overlap
         Text("KA-BLAM!")
-          .font(.system(size: 20, weight: .black))
+          .font(.system(size: 18, weight: .black))
           .italic()
-          .padding(10)
+          .padding(8)
           .background(colors.sky)
           .border(.black, width: 3)
           .rotationEffect(.degrees(15))
-          .offset(x: 130, y: -120)
+          .position(x: 350, y: 50)
 
         Text("LEVEL UP!")
-          .font(.system(size: 18, weight: .black))
-          .padding(8)
+          .font(.system(size: 16, weight: .black))
+          .padding(6)
           .background(colors.accent)
           .border(.black, width: 3)
           .rotationEffect(.degrees(-10))
-          .offset(x: -120, y: 120)
+          .position(x: 70, y: 380)
       }
       .frame(height: 420)
       .clipped()
@@ -151,7 +157,10 @@ struct SharingCardView: View {
           .comicPanel(color: colors.panel, ink: .black, x: 5, y: 5)
         }
 
-        Button(action: shareImage) {
+        Button(action: {
+          HapticManager.shared.triggerHeavy()
+          shareImage()
+        }) {
           HStack {
             Image(systemName: "square.and.arrow.up.fill")
             Text("SHARE TO SQUAD")
@@ -181,13 +190,22 @@ struct SharingCardView: View {
         }
       }
     #elseif os(iOS)
-      if let image = renderer.uiImage {
+      if let image = renderer.uiImage,
+        let imageData = image.jpegData(compressionQuality: 0.9),
+        let jpegImage = UIImage(data: imageData)
+      {
         let activityVC = UIActivityViewController(
-          activityItems: [image], applicationActivities: nil)
+          activityItems: [jpegImage], applicationActivities: nil)
+        activityVC.excludedActivityTypes = [.assignToContact, .addToReadingList]
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
           let rootVC = windowScene.windows.first?.rootViewController
         {
-          rootVC.present(activityVC, animated: true)
+          // Find topmost presented view controller
+          var topVC = rootVC
+          while let presented = topVC.presentedViewController {
+            topVC = presented
+          }
+          topVC.present(activityVC, animated: true)
         }
       }
     #endif
@@ -218,6 +236,8 @@ struct MiniStat: View {
 struct MissionCompleteSplash: View {
   let colors: RanColors
   let distance: Double
+  let heroName: String
+  let streakDays: Int
   let onDismiss: () -> Void
   @State private var appear = false
   @State private var isShowingSnapMode = false
@@ -268,7 +288,7 @@ struct MissionCompleteSplash: View {
             // XP Gained
             HStack(spacing: 20) {
               StatPill(label: "XP GAINED", value: "+\(Int(distance * 100))", color: colors.accent)
-              StatPill(label: "STREAK", value: "14 DAYS", color: colors.sky)
+              StatPill(label: "STREAK", value: "\(streakDays) DAYS", color: colors.sky)
             }
           }
           .offset(y: appear ? 0 : 50)
@@ -276,7 +296,10 @@ struct MissionCompleteSplash: View {
 
           // Buttons
           VStack(spacing: 20) {
-            Button(action: { withAnimation(.spring()) { isShowingSnapMode = true } }) {
+            Button(action: {
+              HapticManager.shared.triggerMedium()
+              withAnimation(.spring()) { isShowingSnapMode = true }
+            }) {
               HStack {
                 Image(systemName: "camera.shutter.button.fill")
                 Text("TAKE MISSION PHOTO")
@@ -289,7 +312,10 @@ struct MissionCompleteSplash: View {
               .comicPanel(color: colors.sky, ink: .black)
             }
 
-            Button(action: onDismiss) {
+            Button(action: {
+              HapticManager.shared.triggerLight()
+              onDismiss()
+            }) {
               Text("RETURN TO HQ")
                 .font(.headline.bold())
                 .foregroundStyle(.white.opacity(0.5))
@@ -298,13 +324,16 @@ struct MissionCompleteSplash: View {
           .buttonStyle(.plain)
         }
       } else {
-        SharingCardView(colors: colors, distance: distance) {
+        SharingCardView(
+          colors: colors, distance: distance, heroName: heroName, streakDays: streakDays
+        ) {
           withAnimation { isShowingSnapMode = false }
         }
         .transition(.asymmetric(insertion: .scale.combined(with: .opacity), removal: .scale))
       }
     }
     .onAppear {
+      HapticManager.shared.triggerSuccess()
       withAnimation(.interpolatingSpring(stiffness: 100, damping: 12)) {
         appear = true
       }

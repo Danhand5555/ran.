@@ -709,3 +709,57 @@ body {
   font-size: 12px;
   opacity: 0.3;
 }
+
+/* Segmented Liquid Glass Slider */
+.liquid-slider-container {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  padding: 6px;
+  border-radius: 20px;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 24px;
+}
+
+.liquid-slider-btn {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  transition: color 0.3s;
+  min-width: 100px;
+}
+
+.liquid-slider-btn.active {
+  color: var(--accent);
+}
+
+.active-pill {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  height: calc(100% - 12px);
+  width: 100px;
+  /* Base width */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  z-index: 1;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.active-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.1), transparent);
+}

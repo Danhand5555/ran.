@@ -40,10 +40,7 @@ class FirebaseManager: ObservableObject {
           try? await self.ensureUserDocumentExists(user: user)
         }
       } else {
-        print("❌ DEBUG: No User Logged In. Attempting auto-login...")
-        Task {
-          try? await self.signInAnonymously()
-        }
+        print("❌ DEBUG: No User Logged In.")
       }
     }
   }
@@ -65,6 +62,35 @@ class FirebaseManager: ObservableObject {
     print("Signed in anonymously: \(result.user.uid)")
   }
 
+  // MARK: - Email/Password Authentication
+
+  func signUp(email: String, password: String, name: String) async throws {
+    print("DEBUG: Starting sign up for email: \(email)")
+    let result = try await Auth.auth().createUser(withEmail: email, password: password)
+    print("DEBUG: User created with UID: \(result.user.uid)")
+
+    // Update display name
+    let changeRequest = result.user.createProfileChangeRequest()
+    changeRequest.displayName = name
+    try await changeRequest.commitChanges()
+    print("DEBUG: Display name set to: \(name)")
+
+    // Save to Firestore
+    try await saveUserToFirestore(user: result.user, name: name)
+    print("DEBUG: User data saved to Firestore")
+  }
+
+  func signIn(email: String, password: String) async throws {
+    print("DEBUG: Starting sign in for email: \(email)")
+    let result = try await Auth.auth().signIn(withEmail: email, password: password)
+    print("DEBUG: Successfully signed in with UID: \(result.user.uid)")
+  }
+
+  func signOut() throws {
+    try Auth.auth().signOut()
+    print("DEBUG: User signed out successfully")
+  }
+
   func updateProfile(name: String) async throws {
     guard let user = Auth.auth().currentUser else { return }
 
@@ -74,6 +100,31 @@ class FirebaseManager: ObservableObject {
 
     // Sync to Firestore
     try await saveUserToFirestore(user: user, name: name)
+  }
+
+  func saveUserPreferences(
+    runnerType: String,
+    avatarColor: String,
+    aura: String,
+    mask: String,
+    weeklyGoal: Int
+  ) async throws {
+    guard let user = Auth.auth().currentUser else { return }
+
+    let preferences: [String: Any] = [
+      "runnerType": runnerType,
+      "avatarColor": avatarColor,
+      "aura": aura,
+      "mask": mask,
+      "weeklyGoal": weeklyGoal,
+      "hasCompletedOnboarding": true,
+    ]
+
+    try await db.collection("agents").document(user.uid).setData(
+      ["preferences": preferences],
+      merge: true
+    )
+    print("DEBUG: User preferences saved successfully")
   }
 
   // MARK: - Firestore Methods
@@ -106,16 +157,23 @@ class FirebaseManager: ObservableObject {
     let path = "agents/\(user.uid)/runs"
     print("DEBUG: saveRun - Attempting to save run to path: \(path)")
 
-    let runData = try Firestore.Encoder().encode(run)
+    let runData: [String: Any] = [
+      "date": Timestamp(date: run.date),
+      "distance": run.distance,
+      "duration": run.duration,
+      "calories": run.calories,
+      "pace": run.pace,
+      "averageHeartRate": run.averageHeartRate,
+      "pathCoordinates": run.pathCoordinates,
+    ]
     let docRef = try await db.collection("agents").document(user.uid).collection("runs")
-      .addDocument(
-        data: runData)
+      .addDocument(data: runData)
     print("✅ DEBUG: saveRun - Successfully saved run with ID: \(docRef.documentID)")
 
     // Update aggregate stats
     let userRef = db.collection("agents").document(user.uid)
     print("DEBUG: saveRun - Updating stats for user: \(user.uid)")
-    try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+    _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
       let snapshot: DocumentSnapshot
       do {
         try snapshot = transaction.getDocument(userRef)
@@ -127,7 +185,7 @@ class FirebaseManager: ObservableObject {
       var newTotalDistance = run.distance
       var newTotalWorkouts = 1
 
-      if let stats = snapshot.data()?["stats"] as? [String: Any] {
+      if let data = snapshot.data(), let stats = data["stats"] as? [String: Any] {
         let currentDistance = stats["totalDistance"] as? Double ?? 0
         let currentWorkouts = stats["totalWorkouts"] as? Int ?? 0
         newTotalDistance += currentDistance
@@ -162,14 +220,30 @@ class FirebaseManager: ObservableObject {
     print("DEBUG: fetchRuns - Found \(snapshot.documents.count) documents")
 
     return snapshot.documents.compactMap { document in
-      do {
-        var run = try document.data(as: RunData.self)
-        run.id = document.documentID
-        return run
-      } catch {
-        print("DEBUG: fetchRuns - Error decoding document \(document.documentID): \(error)")
+      let data = document.data()
+
+      guard let timestamp = data["date"] as? Timestamp,
+        let distance = data["distance"] as? Double,
+        let duration = data["duration"] as? TimeInterval,
+        let calories = data["calories"] as? Double,
+        let pace = data["pace"] as? Double,
+        let averageHeartRate = data["averageHeartRate"] as? Int,
+        let pathCoordinates = data["pathCoordinates"] as? [GeoPoint]
+      else {
+        print("DEBUG: fetchRuns - Error decoding document \(document.documentID)")
         return nil
       }
+
+      return RunData(
+        id: document.documentID,
+        date: timestamp.dateValue(),
+        distance: distance,
+        duration: duration,
+        calories: calories,
+        pace: pace,
+        averageHeartRate: averageHeartRate,
+        pathCoordinates: pathCoordinates
+      )
     }
   }
 }

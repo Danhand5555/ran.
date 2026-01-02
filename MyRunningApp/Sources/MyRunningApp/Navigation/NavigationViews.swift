@@ -11,17 +11,31 @@ struct RanContentView: View {
   @State private var lastRunDistance = 0.0
   @Environment(\.colorScheme) private var colorScheme
 
-  @AppStorage("isFirstLaunch") private var isFirstLaunch = true
+  @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
   @StateObject private var firebaseManager = FirebaseManager.shared
   @StateObject private var healthManager = HealthManager()
 
   var body: some View {
     let colors = RanColors(scheme: colorScheme)
 
-    if isFirstLaunch {
-      OnboardingView(colors: colors, firebaseManager: firebaseManager) {
-        withAnimation { isFirstLaunch = false }
+    if !firebaseManager.isAuthenticated {
+      AuthenticationView(colors: colors, firebaseManager: firebaseManager)
+        .transition(
+          .asymmetric(
+            insertion: .scale(scale: 1.1).combined(with: .opacity),
+            removal: .scale(scale: 0.8).combined(with: .opacity)
+          ))
+    } else if !hasCompletedOnboarding {
+      WelcomeFlowView(colors: colors, firebaseManager: firebaseManager) {
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
+          hasCompletedOnboarding = true
+        }
       }
+      .transition(
+        .asymmetric(
+          insertion: .move(edge: .trailing).combined(with: .opacity),
+          removal: .scale(scale: 0.9).combined(with: .move(edge: .leading))
+        ))
     } else {
 
       GeometryReader { geo in
@@ -57,19 +71,36 @@ struct RanContentView: View {
               )
               .tag(3)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            #if os(iOS)
+              .tabViewStyle(.page(indexDisplayMode: .never))
+            #else
+              .tabViewStyle(.automatic)
+            #endif
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onChange(of: selectedTab) { oldValue, newValue in
+              HapticManager.shared.triggerSelection()
+            }
 
-            Spacer(minLength: 10)
-
-            RanNavBar(selected: $selectedTab, colors: colors)
-              .padding(.horizontal, 20)
-
-            // Bottom safe area spacer for home indicator
-            Color.clear.frame(height: geo.safeAreaInsets.bottom + 15)
+            // For iOS <26, show comic tab bar inline
+            if #unavailable(iOS 26.0) {
+              Spacer(minLength: 10)
+              RanNavBar(selected: $selectedTab, colors: colors)
+                .padding(.horizontal, 20)
+              Color.clear.frame(height: geo.safeAreaInsets.bottom + 15)
+            }
           }
           .blur(radius: isRunning || showSuccessSplash || showMap || showCharacterLab ? 20 : 0)
           .scaleEffect(isRunning || showSuccessSplash || showMap || showCharacterLab ? 0.9 : 1.0)
+
+          // For iOS 26+, float Liquid Glass tab bar over content
+          if #available(iOS 26.0, *) {
+            VStack {
+              Spacer()
+              RanNavBar(selected: $selectedTab, colors: colors)
+                .padding(.bottom, geo.safeAreaInsets.bottom + 10)
+            }
+            .blur(radius: isRunning || showSuccessSplash || showMap || showCharacterLab ? 20 : 0)
+          }
 
           if isRunning {
             ActiveRunPage(colors: colors) { finalDist in
@@ -83,7 +114,12 @@ struct RanContentView: View {
           }
 
           if showSuccessSplash {
-            MissionCompleteSplash(colors: colors, distance: lastRunDistance) {
+            MissionCompleteSplash(
+              colors: colors,
+              distance: lastRunDistance,
+              heroName: firebaseManager.currentUser?.displayName?.uppercased() ?? "UNKNOWN AGENT",
+              streakDays: 0  // TODO: Get from HealthManager or Firebase
+            ) {
               withAnimation(.spring()) { showSuccessSplash = false }
             }
             .transition(.scale.combined(with: .opacity))
@@ -120,6 +156,19 @@ struct RanContentView: View {
 struct BrandingHeader: View {
   let colors: RanColors
   @Binding var selectedTab: Int
+  @AppStorage("userAvatarColor") private var userAvatarColorName: String = "red"
+
+  private var avatarColor: Color {
+    switch userAvatarColorName {
+    case "blue": return .blue
+    case "green": return .green
+    case "orange": return .orange
+    case "purple": return .purple
+    case "cyan": return .cyan
+    default: return .red
+    }
+  }
+
   var body: some View {
     HStack(alignment: .top) {
       VStack(alignment: .leading, spacing: -5) {
@@ -130,11 +179,14 @@ struct BrandingHeader: View {
         ).background(colors.ink).foregroundStyle(colors.paper)
       }
       Spacer()
-      Button(action: { withAnimation { selectedTab = 3 } }) {
+      Button(action: {
+        HapticManager.shared.triggerLight()
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) { selectedTab = 3 }
+      }) {
         ZStack {
-          Circle().fill(colors.accent).frame(width: 70, height: 70).comicPanel(
-            color: colors.accent, ink: colors.ink, x: 4, y: 4)
-          Image(systemName: "person.fill").font(.title).foregroundStyle(colors.ink)
+          Circle().fill(avatarColor).frame(width: 70, height: 70).comicPanel(
+            color: avatarColor, ink: colors.ink, x: 4, y: 4)
+          Image(systemName: "figure.run").font(.title).foregroundStyle(colors.paper)
         }
       }.buttonStyle(.plain)
     }
@@ -144,37 +196,130 @@ struct BrandingHeader: View {
 struct RanNavBar: View {
   @Binding var selected: Int
   let colors: RanColors
+
   var body: some View {
-    HStack(spacing: 0) {
-      NavTabItem(icon: "figure.run", title: "RUN", active: selected == 0, colors: colors) {
-        withAnimation { selected = 0 }
-      }
-      Spacer()
-      NavTabItem(icon: "star.fill", title: "TROPHIES", active: selected == 1, colors: colors) {
-        withAnimation { selected = 1 }
-      }
-      Spacer()
-      NavTabItem(icon: "person.3.fill", title: "SQUAD", active: selected == 2, colors: colors) {
-        withAnimation { selected = 2 }
-      }
-    }.padding(.horizontal, 40).padding(.vertical, 12).background(colors.panel).border(
-      colors.ink, width: RanColors.thickness
-    ).background(colors.ink.offset(x: 5, y: 5))
+    if #available(iOS 26.0, macOS 26.0, *) {
+      RanLiquidNavBar(selected: $selected, colors: colors)
+    } else {
+      // Comic style for older iOS
+      RanComicNavBar(selected: $selected, colors: colors)
+    }
   }
 }
 
-struct NavTabItem: View {
-  let icon: String
-  let title: String
-  let active: Bool
+// MARK: - iOS 26 Liquid Glass Tab Bar
+@available(iOS 26.0, macOS 26.0, *)
+struct RanLiquidNavBar: View {
+  @Binding var selected: Int
   let colors: RanColors
-  let action: () -> Void
+
+  @Namespace private var nspace
+
+  private let tabs = [0, 1, 2]
+  private let icons = ["figure.run", "star.fill", "person.3.fill"]
+  private let titles = ["RUN", "TROPHIES", "SQUAD"]
+
   var body: some View {
-    Button(action: action) {
-      VStack(spacing: 2) {
-        Image(systemName: icon).font(.system(size: 22, weight: .bold))
-        Text(title).font(.system(size: 10, weight: .black))
-      }.foregroundStyle(active ? colors.action : colors.ink).scaleEffect(active ? 1.05 : 1.0)
-    }.buttonStyle(.plain)
+    ZStack {
+      // Layer 1: The Liquid Glass Background
+      GlassEffectContainer {
+        HStack(spacing: 0) {
+          ForEach(tabs, id: \.self) { index in
+            // Invisible structures just for the glass system to track
+            Capsule()
+              .fill(.clear)
+              .frame(height: 50)  // Match approximate content height
+              .overlay {
+                if selected == index {
+                  Capsule()
+                    .glassEffect(.clear)
+                    .matchedGeometryEffect(id: "tab", in: nspace)
+                    .glassEffectID("tab_\(index)", in: nspace)
+                } else {
+                  Capsule().fill(.clear)
+                    .glassEffectID("tab_\(index)", in: nspace)
+                }
+              }
+              .frame(maxWidth: .infinity)
+          }
+        }
+        .padding(4)
+        .background(backgroundCapsule)
+      }
+
+      // Layer 2: The Interactive Content (Text/Icons) on TOP
+      HStack(spacing: 0) {
+        ForEach(tabs, id: \.self) { index in
+          Button(action: {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+              selected = index
+            }
+            HapticManager.shared.triggerSelection()
+          }) {
+            VStack(spacing: 4) {
+              Image(systemName: icons[index])
+                .font(.system(size: 24, weight: .medium))
+                .frame(width: 28, height: 28)
+              Text(titles[index])
+                .font(.system(size: 10, weight: .medium))
+            }
+            .foregroundStyle(selected == index ? colors.action : Color.gray)
+            .padding(.vertical, 10)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())  // Ensure tap target covers the whole area
+          }
+          .buttonStyle(.plain)
+        }
+      }
+      .padding(4)
+    }
+    .padding(.horizontal, 20)
+  }
+
+  private var backgroundCapsule: some View {
+    Capsule()
+      .glassEffect(.regular.interactive())
+  }
+}
+
+// MARK: - Comic Style Tab Bar (iOS <26 Fallback)
+struct RanComicNavBar: View {
+  @Binding var selected: Int
+  let colors: RanColors
+
+  private let tabs = [0, 1, 2]
+  private let icons = ["figure.run", "star.fill", "person.3.fill"]
+  private let titles = ["RUN", "TROPHIES", "SQUAD"]
+
+  var body: some View {
+    HStack(spacing: 0) {
+      ForEach(tabs, id: \.self) { index in
+        Button(action: {
+          withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            selected = index
+          }
+          HapticManager.shared.triggerSelection()
+        }) {
+          VStack(spacing: 2) {
+            Image(systemName: icons[index])
+              .font(.system(size: 22, weight: .bold))
+              .frame(width: 28, height: 28)
+            Text(titles[index])
+              .font(.system(size: 10, weight: .black))
+          }
+          .foregroundStyle(selected == index ? colors.action : colors.ink)
+          .scaleEffect(selected == index ? 1.05 : 1.0)
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+      }
+    }
+    .padding(.horizontal, 40)
+    .padding(.vertical, 12)
+    .background(colors.panel)
+    .border(colors.ink, width: RanColors.thickness)
+    .background(colors.ink.offset(x: 5, y: 5))
+    .padding(.horizontal, 20)
   }
 }
